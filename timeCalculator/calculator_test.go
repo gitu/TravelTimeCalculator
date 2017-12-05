@@ -43,18 +43,32 @@ func TestCalculate(t *testing.T) {
 	calculate(t, "Wintherthur", "St. Gallen", "Zug", "36m")
 	calculate(t, "Zug", "Zug", "Zürich", "0s")
 	calculate(t, "Zug", "Zug", "Zug", "0s")
+	calculate(t, "Zürich", "Zug", "Zürich", "21m0s")
 }
 
 func round(t *testing.T, in string, expected string) {
-
-	//round := timeCalculator.Round(time.ParseDuration(in))
-	t.FailNow()
+    di, err := time.ParseDuration(in)
+	if err != nil {
+		t.Log("Error with query: ", err)
+		t.Fail()
+	}
+    de, err := time.ParseDuration(expected)
+    if err != nil {
+		t.Log("Error with query: ", err)
+		t.Fail()
+	}
+	if de != timeCalculator.Round(di) {
+		t.Log(di, " was not rounded correctly ",timeCalculator.Round(di), " it should be ", de)
+		t.Fail()
+	}
 }
 
 func TestRound(t *testing.T) {
 	round(t, "13m", "15m")
 	round(t, "12m10s", "0m")
 	round(t, "33m", "30m")
+	round(t, "38m", "30m")
 	round(t, "1h33m", "1h30m")
 	round(t, "1h33m", "1h30m")
+	round(t, "1h30m", "1h30m")
 }

@@ -15,7 +15,8 @@ import (
 var myClient = &http.Client{Timeout: 10 * time.Second}
 
 func Round(duration time.Duration) time.Duration {
-	return duration
+	quarters := (int64(duration/time.Minute) + 2) / 15
+	return time.Minute * time.Duration(quarters * 15)
 }
 
 func getJson(url string, target interface{}) error {
@@ -111,8 +112,8 @@ func Calculate(home string, target string, workPlace string) (time.Duration, err
 	}
 
 	result := time.Duration(0)
-	if HT < WT {
-		if HW > WT {
+	if HT <= WT {
+		if HW >= WT {
 			result = WT - HT
 		} else {
 			result = HT
@@ -129,8 +130,7 @@ func Calculate(home string, target string, workPlace string) (time.Duration, err
 		result = HT
 	}
 
-
-	fmt.Printf("%-15s; %-15s; %-15s;%8s;%8s;%8s;%8s\n", home, target, workPlace, HT, WT, HW, result)
+	fmt.Printf("%-15s; %-15s; %-15s;%8s;%8s;%8s;%8s;%8s\n", home, target, workPlace, HT, WT, HW, result, Round(result))
 
 	return result, nil
 }
