@@ -7,7 +7,7 @@ import (
 )
 
 func calculate(t *testing.T, home string, target string, workPlace string, expectedDuration string) {
-	duration, err := timeCalculator.Calculate(home, target, workPlace)
+	duration,_, err := timeCalculator.Calculate(home, target, workPlace)
 	if err != nil {
 		t.Log("Error with query: ", err)
 		t.Fail()
