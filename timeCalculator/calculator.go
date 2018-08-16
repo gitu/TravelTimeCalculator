@@ -15,8 +15,8 @@ import (
 var myClient = &http.Client{Timeout: 10 * time.Second}
 
 func Round(duration time.Duration) time.Duration {
-	quarters := (int64(duration/time.Minute) + 2) / 15
-	return time.Minute * time.Duration(quarters * 15)
+	quarters := (int64(duration/time.Minute) + 14) / 15
+	return time.Minute * time.Duration(quarters*15)
 }
 
 func getJson(url string, target interface{}) error {
@@ -54,14 +54,10 @@ func getJson(url string, target interface{}) error {
 func ParseDuration(s string) (time.Duration, error) {
 	return time.ParseDuration(s[3:5] + "h" + s[6:8] + "m")
 }
-func CalculateAverage(from string, to string, via string) (time.Duration, error) {
+func CalculateAverage(from string, to string, departure string) (time.Duration, error) {
 	conn := new(ConnectionsResult) // or &Foo{}
-	myUrl := fmt.Sprintf("http://transport.opendata.ch/v1/connections?from=%s&to=%s&time=06:00&limit=6",
-		template.URLQueryEscaper(from), template.URLQueryEscaper(to))
-
-	if !(via == from || via == to) {
-		myUrl += "&via=" + via
-	}
+	myUrl := fmt.Sprintf("http://transport.opendata.ch/v1/connections?from=%s&to=%s&time=%s&limit=8",
+		template.URLQueryEscaper(from), template.URLQueryEscaper(to), departure)
 
 	err := getJson(myUrl, conn)
 	if err != nil {
@@ -97,40 +93,36 @@ func CalculateAverage(from string, to string, via string) (time.Duration, error)
 	return averageDuration, nil
 }
 
-func Calculate(home string, target string, workPlace string) (time.Duration, error) {
-	HT, err := CalculateAverage(home, target, target)
+func Calculate(home, target, workPlace string) (time.Duration, time.Duration, error) {
+	morningHT, err := CalculateAverage(home, target, "06:30")
 	if err != nil {
-		return 0, err
+		return 0, 0, err
 	}
-	WT, err := CalculateAverage(workPlace, target, target)
+	morningHW, err := CalculateAverage(home, workPlace, "06:30")
 	if err != nil {
-		return 0, err
+		return 0, 0, err
 	}
-	HW, err := CalculateAverage(home, workPlace, workPlace)
+
+	morningResult := morningHT - morningHW
+	if morningResult < 0 {
+		morningResult = 0
+	}
+
+	eveningTH, err := CalculateAverage(target, home, "17:00")
 	if err != nil {
-		return 0, err
+		return 0, 0, err
+	}
+	eveningWH, err := CalculateAverage(workPlace, home, "17:00")
+	if err != nil {
+		return 0, 0, err
 	}
 
-	result := time.Duration(0)
-	if HT <= WT {
-		if HW >= WT {
-			result = WT - HT
-		} else {
-			result = HT
-		}
-	}
-	if HT > WT && HT-HW > 0 {
-		result = HT - HW
+	eveningResult := eveningTH - eveningWH
+	if eveningResult < 0 {
+		eveningResult = 0
 	}
 
-	if result > WT {
-		result = WT
-	}
-	if result > HT {
-		result = HT
-	}
+	fmt.Printf("%-20s; %-20s; %-20s;%8s;%8s;%8s;%8s;%8s;%8s;%8s;%8s;%8s\n", home, target, workPlace, morningHT, morningHW, morningResult, Round(morningResult), eveningTH, eveningWH, eveningResult, Round(eveningResult), Round(morningResult+eveningResult))
 
-	fmt.Printf("%-15s; %-15s; %-15s;%8s;%8s;%8s;%8s;%8s\n", home, target, workPlace, HT, WT, HW, result, Round(result))
-
-	return result, nil
+	return morningResult, eveningResult, nil
 }

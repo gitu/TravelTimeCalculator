@@ -2,7 +2,7 @@ package main
 
 import (
 	"log"
-	"github.com/gitu/travelTimeCalculator/timeCalculator"
+	"github.com/gitu/TravelTimeCalculator/timeCalculator"
 	"fmt"
 )
 
@@ -15,7 +15,8 @@ func main() {
 		"Zürich",
 	}
 
-	fmt.Printf("%s;%s;%s;%s;%s;%s;%s\n", "HOME", "TARGET", "WORKPLACE", "HT", "WT", "HW", "RES")
+	fmt.Printf("%-20s; %-20s; %-20s;%8s;%8s;%8s;%8s;%8s;%8s;%8s;%8s;%8s\n",
+		"HOME", "TARGET", "WORKPLACE", "HT", "HW", "MORN", "MORN_R", "TH", "WH", "EVEN", "EVEN_R", "TWOWAY")
 
 	for _, workPlace := range workPlaces {
 		for _, home := range homes {
@@ -27,7 +28,7 @@ func main() {
 }
 
 func QuickCalc(home string, target string, workPlace string) {
-	_, err := timeCalculator.Calculate(home, target, workPlace)
+	_, _, err := timeCalculator.Calculate(home, target, workPlace)
 	if err != nil {
 		log.Fatalln(err)
 	}

@@ -2,7 +2,7 @@ package timeCalculator_test
 
 import (
 	"testing"
-	"github.com/gitu/travelTimeCalculator/timeCalculator"
+	"github.com/gitu/TravelTimeCalculator/timeCalculator"
 	"time"
 )
 
@@ -24,23 +24,23 @@ func calculate(t *testing.T, home string, target string, workPlace string, expec
 }
 
 func TestCalculate(t *testing.T) {
-	calculate(t, "Rotkreuz", "Zürich", "Zug", "22m0s")
+	calculate(t, "Rotkreuz", "Zürich", "Zug", "28m0s")
 	calculate(t, "Rotkreuz", "Zürich", "Zürich", "0m")
-	calculate(t, "Rotkreuz", "Luzern", "Zürich", "15m0s")
-	calculate(t, "Rotkreuz", "Bendern", "Zug", "2h9m0s")
+	calculate(t, "Rotkreuz", "Luzern", "Zürich", "0s")
+	calculate(t, "Rotkreuz", "Bendern", "Zug", "2h10m0s")
 	calculate(t, "Zürich", "Zürich", "Zug", "0m")
-	calculate(t, "Zürich", "St Gallen", "Zug", "1h2m0s")
+	calculate(t, "Zürich", "St Gallen", "Zug", "41m0s")
 	calculate(t, "Bern", "Zürich", "Zug", "0m")
 	calculate(t, "Bern", "St Gallen", "Zug", "35m0s")
-	calculate(t, "Bern", "Aarau", "Zug", "17m0s")
+	calculate(t, "Bern", "Aarau", "Zug", "0s")
 	calculate(t, "Bern", "Aarau", "Zürich", "0s")
-	calculate(t, "Thalwil", "Zürich", "Zug", "9m0s")
+	calculate(t, "Thalwil", "Zürich", "Zug", "0s")
 	calculate(t, "Reinach AG", "Luzern", "Zug", "0m")
-	calculate(t, "Reinach AG", "Liestal", "Zug", "13m0s")
+	calculate(t, "Reinach AG", "Liestal", "Zug", "0s")
 	calculate(t, "Aarau", "Luzern", "Zug", "0m")
-	calculate(t, "Aarau", "Liestal", "Zug", "25m0s")
+	calculate(t, "Aarau", "Liestal", "Zug", "0s")
 	calculate(t, "Aarau", "St. Gallen", "Zug", "46m0s")
-	calculate(t, "Wintherthur", "St. Gallen", "Zug", "36m")
+	calculate(t, "Wintherthur", "St. Gallen", "Zug", "0s")
 	calculate(t, "Zug", "Zug", "Zürich", "0s")
 	calculate(t, "Zug", "Zug", "Zug", "0s")
 	calculate(t, "Zürich", "Zug", "Zürich", "21m0s")
@@ -65,10 +65,24 @@ func round(t *testing.T, in string, expected string) {
 
 func TestRound(t *testing.T) {
 	round(t, "13m", "15m")
-	round(t, "12m10s", "0m")
-	round(t, "33m", "30m")
-	round(t, "38m", "30m")
-	round(t, "1h33m", "1h30m")
-	round(t, "1h33m", "1h30m")
+	round(t, "12m10s", "15m")
+	round(t, "33m", "45m")
+	round(t, "38m", "45m")
+	round(t, "1h33m", "1h45m")
+	round(t, "1h33m", "1h45m")
 	round(t, "1h30m", "1h30m")
+	round(t, "1h31m", "1h45m")
+	round(t, "1h32m", "1h45m")
+	round(t, "1h34m", "1h45m")
+	round(t, "1h35m", "1h45m")
+	round(t, "1h36m", "1h45m")
+	round(t, "1h37m", "1h45m")
+	round(t, "1h38m", "1h45m")
+	round(t, "1h39m", "1h45m")
+	round(t, "1h40m", "1h45m")
+	round(t, "1h41m", "1h45m")
+	round(t, "1h42m", "1h45m")
+	round(t, "1h43m", "1h45m")
+	round(t, "1h44m", "1h45m")
+	round(t, "1h45m", "1h45m")
 }
